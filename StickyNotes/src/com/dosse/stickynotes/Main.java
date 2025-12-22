@@ -439,6 +439,17 @@ public class Main {
             //</editor-fold>
         } catch (Throwable ex) {
         }
+        //add shutdown hook to save notes when Windows is shutting down
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                synchronized (notes) {
+                    if (!notes.isEmpty()) {
+                        saveState();
+                    }
+                }
+            }
+        });
         //attempt to load from storage
         if (!loadState()) {
             if (!noAutoCreate) {
@@ -451,7 +462,7 @@ public class Main {
             System.exit(0);
         }
         //this thread autosaves the notes every 60 seconds
-        new Thread() {
+        Thread autosaveThread = new Thread() {
             @Override
             public void run() {
                 setPriority(Thread.MIN_PRIORITY);
@@ -468,9 +479,11 @@ public class Main {
                     }
                 }
             }
-        }.start();
+        };
+        autosaveThread.setDaemon(true);
+        autosaveThread.start();
         //this thread checks the notes every 1 second to make sure they're still inside the screen (in case the resolution changes)
-        new Thread() {
+        Thread screenCheckThread = new Thread() {
             @Override
             public void run() {
                 setPriority(Thread.MIN_PRIORITY);
@@ -489,9 +502,11 @@ public class Main {
                     }
                 }
             }
-        }.start();
+        };
+        screenCheckThread.setDaemon(true);
+        screenCheckThread.start();
         //this thread calls the java gc every 5 minutes to keep ram usage low
-        new Thread() {
+        Thread gcThread = new Thread() {
             @Override
             public void run() {
                 setPriority(Thread.MIN_PRIORITY);
@@ -509,7 +524,9 @@ public class Main {
                     }
                 }
             }
-        }.start();
+        };
+        gcThread.setDaemon(true);
+        gcThread.start();
         System.gc(); //cleanup after starting
     }
 }
