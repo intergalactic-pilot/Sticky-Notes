@@ -183,8 +183,11 @@ public class Note extends JDialog {
     private static String getClipboard() {
         try {
             Transferable contents = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            return (String) contents.getTransferData(DataFlavor.stringFlavor);
-        } catch (Throwable t) {
+            if (contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                return (String) contents.getTransferData(DataFlavor.stringFlavor);
+            }
+            return null;
+        } catch (Exception e) {
             return null;
         }
     }
@@ -204,6 +207,18 @@ public class Note extends JDialog {
             return i;
         }
     }
+
+    //UI Constants
+    private static final int DEFAULT_NOTE_WIDTH = 190;
+    private static final int DEFAULT_NOTE_HEIGHT = 170;
+    private static final int MIN_NOTE_WIDTH = 160;
+    private static final int MIN_NOTE_HEIGHT = 90;
+    private static final int BORDER_SIZE = 6;
+    private static final int BUTTON_HEIGHT = 19;
+    private static final int MENU_ITEM_WIDTH = 100;
+    private static final int MENU_ITEM_HEIGHT = 36;
+    private static final float SCALE_FACTOR = 0.85f;
+    private static final float TEXT_SCALE_STEP = 0.1f;
 
     //UI Elements
     private final JPanel wrapper1; //outer wrapper: it's the area that the user can use to resize the window
@@ -299,8 +314,8 @@ public class Note extends JDialog {
         ComponentResizer cr = new ComponentResizer();
         cr.registerComponent(this);
         cr.setSnapSize(new Dimension(1, 1)); //no snap
-        cr.setMinimumSize(new Dimension((int) (160 * Main.SCALE), (int) (90 * Main.SCALE))); //min size is 160x90 @80dpi
-        setPreferredSize(new Dimension((int) (190 * Main.SCALE), (int) (170 * Main.SCALE))); //default size is 190x170 @80dpi
+        cr.setMinimumSize(new Dimension((int) (MIN_NOTE_WIDTH * Main.SCALE), (int) (MIN_NOTE_HEIGHT * Main.SCALE)));
+        setPreferredSize(new Dimension((int) (DEFAULT_NOTE_WIDTH * Main.SCALE), (int) (DEFAULT_NOTE_HEIGHT * Main.SCALE)));
         setLocation(MouseInfo.getPointerInfo().getLocation()); //new note is placed at current mouse coordinates
         setResizable(false); //disallow resize by OS, such as maximize. Notes are still resizeable by the user (provided by ComponentResizer)
 
@@ -352,11 +367,11 @@ public class Note extends JDialog {
         text.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.isControlDown() || e.isMetaDown()) { //scroll wheel with ctrl pressed (isMetaDown is for apple faggots)
+                if (e.isControlDown() || e.isMetaDown()) { //scroll wheel with ctrl pressed (isMetaDown is for macOS)
                     if (e.getWheelRotation() < 0) {
-                        setTextScale(textScale + 0.1f);
+                        setTextScale(textScale + TEXT_SCALE_STEP);
                     } else if (e.getWheelRotation() > 0) {
-                        setTextScale(textScale - 0.1f);
+                        setTextScale(textScale - TEXT_SCALE_STEP);
                     }
                 } else { //scroll wheel without ctrl pressed simply scrolls
                     jScrollPane1.getMouseWheelListeners()[0].mouseWheelMoved(e);
@@ -370,9 +385,9 @@ public class Note extends JDialog {
             public void keyPressed(KeyEvent e) {
                 if (e.isControlDown() || e.isMetaDown()) {
                     if (e.getKeyCode() == KeyEvent.VK_ADD) {
-                        setTextScale(textScale + 0.1f);
+                        setTextScale(textScale + TEXT_SCALE_STEP);
                     } else if (e.getKeyCode() == KeyEvent.VK_SUBTRACT) {
-                        setTextScale(textScale - 0.1f);
+                        setTextScale(textScale - TEXT_SCALE_STEP);
                     } else if (e.getKeyCode() == KeyEvent.VK_NUMPAD0) {
                         setTextScale(1);
                     }
@@ -438,29 +453,30 @@ public class Note extends JDialog {
 
         //initialize copy-paste menu
         copyPasteMenu = new JPopupMenu();
+        Dimension menuItemSize = new Dimension((int) (MENU_ITEM_WIDTH * Main.SCALE), (int) (MENU_ITEM_HEIGHT * Main.SCALE));
         cut = new JMenuItem(getLocString("CUT"));
-        cut.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        cut.setPreferredSize(menuItemSize);
         cut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 text.cut();
             }
         });
         copy = new JMenuItem(getLocString("COPY"));
-        copy.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        copy.setPreferredSize(menuItemSize);
         copy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 text.copy();
             }
         });
         paste = new JMenuItem(getLocString("PASTE"));
-        paste.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        paste.setPreferredSize(menuItemSize);
         paste.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 text.paste();
             }
         });
         delete = new JMenuItem(getLocString("DELETE"));
-        delete.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        delete.setPreferredSize(menuItemSize);
         delete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String s = getClipboard();
@@ -469,7 +485,7 @@ public class Note extends JDialog {
             }
         });
         selectAll = new JMenuItem(getLocString("SELECTALL"));
-        selectAll.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        selectAll.setPreferredSize(menuItemSize);
         selectAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 text.setSelectionStart(0);
@@ -531,7 +547,7 @@ public class Note extends JDialog {
         });
         colorMenu.add(new JPopupMenu.Separator());
         JMenuItem m = new JMenuItem(getLocString("ABOUT"));
-        m.setPreferredSize(new Dimension((int) (100 * Main.SCALE), (int) (36 * Main.SCALE)));
+        m.setPreferredSize(menuItemSize);
         m.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -553,7 +569,7 @@ public class Note extends JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(wrapper1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(wrapper1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-        pack(); //fuck my shit up fam
+        pack(); //finalize the layout
 
         setColorScheme(DEFAULT_SCHEME); //set default color scheme (yellow)
 

@@ -69,16 +69,17 @@ public class Main {
             File f = new File(home);
             if (f.exists()) {
                 if (!f.isDirectory()) {
-                    throw new Exception();
+                    throw new IllegalStateException("Storage path exists but is not a directory");
                 }
             } else {
                 Path p = Paths.get(home);
                 Files.createDirectories(p);
             }
 
-        } catch (Throwable t) {
-            //fallback path, local folder and hope for the best
+        } catch (Exception e) {
+            //fallback path, local folder
             home = "";
+            System.err.println("Warning: Could not create storage directory, using local folder: " + e.getMessage());
         }
         STORAGE_PATH = home + "sticky.dat"; //main storage
         BACKUP_PATH = home + "sticky.dat.bak"; //backup in case main storage is corrupt
@@ -105,7 +106,6 @@ public class Main {
      */
     public static void saveState() {
         synchronized (notes) {
-            ObjectOutputStream oos = null;
             try {
                 File st = new File(STORAGE_PATH);
                 File bk = new File(BACKUP_PATH);
@@ -123,26 +123,23 @@ public class Main {
                     bkTemp.delete();
                 }
                 st = new File(STORAGE_PATH);
-                oos = new ObjectOutputStream(new FileOutputStream(st));
-                oos.writeObject(SCALE);
-                oos.writeObject(notes.size());
-                for (Note n : notes) {
-                    oos.writeObject(n.getPreferredLocation());
-                    oos.writeObject(n.getSize());
-                    oos.writeObject(n.getColorScheme());
-                    oos.writeObject(n.getText());
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(st))) {
+                    oos.writeObject(SCALE);
+                    oos.writeObject(notes.size());
+                    for (Note n : notes) {
+                        oos.writeObject(n.getPreferredLocation());
+                        oos.writeObject(n.getSize());
+                        oos.writeObject(n.getColorScheme());
+                        oos.writeObject(n.getText());
+                    }
+                    //text scales are written at the end of the file so that older versions of the program can still load this .dat file
+                    for (Note n : notes) {
+                        oos.writeObject(n.getTextScale());
+                    }
+                    oos.flush();
                 }
-                //text scales are written at the end of the file so that older versions of the program can still load this .dat file
-                for (Note n : notes) {
-                    oos.writeObject(n.getTextScale());
-                }
-                oos.flush();
-                oos.close();
-            } catch (Throwable t) {
-                try {
-                    oos.close();
-                } catch (Throwable t2) {
-                }
+            } catch (IOException e) {
+                System.err.println("Error saving notes: " + e.getMessage());
             }
         }
     }
@@ -160,9 +157,10 @@ public class Main {
      */
     private static boolean attemptLoad(File f) {
         synchronized (notes) {
-            ObjectInputStream ois = null;
-            try {
-                ois = new ObjectInputStream(new FileInputStream(f));
+            if (!f.exists() || !f.canRead()) {
+                return false;
+            }
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
                 float savScale = (Float) (ois.readObject());
                 float scaleMul = SCALE / savScale;
                 int n = (Integer) (ois.readObject());
@@ -194,20 +192,16 @@ public class Main {
                     for (int i = 0; i < n; i++) {
                         notes.get(i).setTextScale((Float) (ois.readObject()));
                     }
-                } catch (Throwable t) {
+                } catch (Exception ignored) {
+                    //older version compatibility - text scale not available
                 }
                 for (Note note : notes) {
                     note.setVisible(true);
                 }
-                ois.close();
-            } catch (Throwable t) {
-                try {
-                    ois.close();
-                } catch (Throwable t2) {
-                }
-                for (Note n : notes) {
-                    n.setVisible(false);
-                    n.dispose();
+            } catch (Exception e) {
+                for (Note note : notes) {
+                    note.setVisible(false);
+                    note.dispose();
                 }
                 notes.clear();
                 return false;
@@ -287,7 +281,7 @@ public class Main {
                 ch.close();
                 return true;
             }
-        } catch (Throwable t) {
+        } catch (IOException e) {
             return true;
         }
     }
