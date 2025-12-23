@@ -26,6 +26,7 @@
  */
 package com.dosse.stickynotes;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -62,14 +63,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.undo.UndoManager;
 
 /**
@@ -236,16 +244,16 @@ public class Note extends JDialog {
     }
 
     //UI Constants - Windows 11 Modern Style
-    private static final int DEFAULT_NOTE_WIDTH = 280;
-    private static final int DEFAULT_NOTE_HEIGHT = 280;
-    private static final int MIN_NOTE_WIDTH = 200;
+    private static final int DEFAULT_NOTE_WIDTH = 160;
+    private static final int DEFAULT_NOTE_HEIGHT = 160;
+    private static final int MIN_NOTE_WIDTH = 120;
     private static final int MIN_NOTE_HEIGHT = 120;
     private static final int BORDER_SIZE = 1;
-    private static final int BUTTON_HEIGHT = 32;
-    private static final int HEADER_HEIGHT = 40;
+    private static final int BUTTON_HEIGHT = 21;
+    private static final int HEADER_HEIGHT = 22; // slightly taller than buttons
     private static final int MENU_ITEM_WIDTH = 140;
-    private static final int MENU_ITEM_HEIGHT = 36;
-    private static final int CORNER_RADIUS = 8;
+    private static final int MENU_ITEM_HEIGHT = 28;
+    private static final int CORNER_RADIUS = 12;
     private static final float SCALE_FACTOR = 0.85f;
     private static final float TEXT_SCALE_STEP = 0.1f;
 
@@ -255,11 +263,10 @@ public class Note extends JDialog {
     private int mouseDragStartX, mouseDragStartY; //used for dragging
     private final JButton deleteNote, newNote; //buttons to delete and create notes
     private final JScrollPane jScrollPane1; //container for the text. provides the scrollbar
-    private final JTextArea text; //the actual note
+    private final JTextPane text; //the actual note - JTextPane for rich text formatting
     private final UndoManager undo = new UndoManager(); //undo/redo manager (provided by swing)
-    private final JPopupMenu copyPasteMenu, //menu shown when the textarea is right-clicked
-            colorMenu; //menu shown when the top is right-clicked
-    private final JMenuItem cut, copy, paste, delete, selectAll; //menu items inside copyPasteMenu
+    private final FormatMenu formatMenu; //modern format menu shown when text is right-clicked
+    private final JPopupMenu colorMenu; //menu shown when the top is right-clicked
     private Point preferredLocation = new Point(0, 0); //the preferred location is the last user-set location of the note. this is useful when the screen resolution is changed and the notes are all scrambled up
     private float textScale = 1; //text zoom
     private static final float MIN_TEXT_SCALE = 0.2f, MAX_TEXT_SCALE = 4f; //min max text zoom
@@ -327,7 +334,7 @@ public class Note extends JDialog {
         wrapper2.setCursor(new Cursor(Cursor.MOVE_CURSOR));
         
         // Modern buttons with hover effects
-        newNote = new JButton("+") {
+        newNote = new JButton() {
             private boolean isHovered = false;
             private boolean isPressed = false;
             {
@@ -354,12 +361,19 @@ public class Note extends JDialog {
                 if (isHovered || isPressed) {
                     g2.fillRoundRect(2, 2, getWidth()-4, getHeight()-4, 6, 6);
                 }
+                int cx = getWidth() / 2;
+                int cy = getHeight() / 2;
+                int arm = (int) (Math.min(getWidth(), getHeight()) / 3f * 0.4f); // 60% smaller
+                float stroke = Math.max(1.5f, 1.2f * Main.SCALE);
+                g2.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.setColor(getForeground());
+                g2.drawLine(cx - arm, cy, cx + arm, cy);
+                g2.drawLine(cx, cy - arm, cx, cy + arm);
                 g2.dispose();
-                super.paintComponent(g);
             }
         };
         
-        deleteNote = new JButton("×") {
+        deleteNote = new JButton() {
             private boolean isHovered = false;
             private boolean isPressed = false;
             {
@@ -378,28 +392,34 @@ public class Note extends JDialog {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Color iconColor = getForeground();
                 if (isPressed) {
                     g2.setColor(new Color(232, 17, 35, 200));
-                    setForeground(Color.WHITE);
+                    iconColor = Color.WHITE;
                 } else if (isHovered) {
                     g2.setColor(new Color(232, 17, 35, 160));
-                    setForeground(Color.WHITE);
-                } else {
-                    setForeground(getForeground());
+                    iconColor = Color.WHITE;
                 }
                 if (isHovered || isPressed) {
                     g2.fillRoundRect(2, 2, getWidth()-4, getHeight()-4, 6, 6);
                 }
+                int cx = getWidth() / 2;
+                int cy = getHeight() / 2;
+                int arm = (int) (Math.min(getWidth(), getHeight()) / 3f * 0.4f); // 60% smaller
+                float stroke = Math.max(1.5f, 1.2f * Main.SCALE);
+                g2.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.setColor(iconColor);
+                g2.drawLine(cx - arm, cy - arm, cx + arm, cy + arm);
+                g2.drawLine(cx - arm, cy + arm, cx + arm, cy - arm);
                 g2.dispose();
-                super.paintComponent(g);
             }
         };
         
         jScrollPane1 = new JScrollPane();
-        //create the text area with rounded bottom corners
-        text = new JTextArea() {
+        //create the text pane with rich text support
+        text = new JTextPane() {
             @Override
-            public boolean getScrollableTracksViewportWidth() {//configures the textarea to resize properly horizontaly (workaround for swing bug)
+            public boolean getScrollableTracksViewportWidth() {//configures the textpane to resize properly horizontaly (workaround for swing bug)
                 return true;
             }
         };
@@ -407,9 +427,6 @@ public class Note extends JDialog {
         // Set modern text area margins
         text.setMargin(new java.awt.Insets((int)(8 * Main.SCALE), (int)(12 * Main.SCALE), (int)(8 * Main.SCALE), (int)(12 * Main.SCALE)));
         
-        //enable line wrap
-        text.setLineWrap(true);
-        text.setWrapStyleWord(true);
         //allow undo/redo
         Document doc = text.getDocument();
         doc.addUndoableEditListener(new UndoableEditListener() {
@@ -418,6 +435,9 @@ public class Note extends JDialog {
                 undo.addEdit(e.getEdit());
             }
         });
+        
+        // Initialize modern format menu
+        formatMenu = new FormatMenu(text, getBackground());
 
         jScrollPane1.setBorder(null);
         jScrollPane1.setViewportView(text); //add text area to scrollpane
@@ -512,21 +532,58 @@ public class Note extends JDialog {
             }
         });
 
-        //right click on the note
+        //right click on the note - show modern format menu
         text.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.isPopupTrigger() || evt.getButton() == MouseEvent.BUTTON3) { //isPopupTrigger does not work on windows. workaround is to listen for BUTTON3 instead (right mouse button)
-                    if (text.getSelectionStart() == text.getSelectionEnd()) { //if there is no text selected, disable cut, copy and delete
-                        cut.setEnabled(false);
-                        copy.setEnabled(false);
-                        delete.setEnabled(false);
-                    } else { //otherwise, enable them
-                        cut.setEnabled(true);
-                        copy.setEnabled(true);
-                        delete.setEnabled(true);
+                    formatMenu.show(evt.getComponent(), evt.getX(), evt.getY()); //show the modern format menu at current mouse location
+                }
+            }
+        });
+        
+        // Add keyboard shortcuts for formatting
+        text.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.isControlDown() || e.isMetaDown()) {
+                    StyledDocument doc = text.getStyledDocument();
+                    int start = text.getSelectionStart();
+                    int end = text.getSelectionEnd();
+                    
+                    if (e.getKeyCode() == KeyEvent.VK_B) {
+                        // Toggle bold
+                        MutableAttributeSet attr = new SimpleAttributeSet();
+                        boolean isBold = StyleConstants.isBold(text.getCharacterAttributes());
+                        StyleConstants.setBold(attr, !isBold);
+                        if (start != end) {
+                            doc.setCharacterAttributes(start, end - start, attr, false);
+                        } else {
+                            text.getInputAttributes().addAttributes(attr);
+                        }
+                        e.consume();
+                    } else if (e.getKeyCode() == KeyEvent.VK_I) {
+                        // Toggle italic
+                        MutableAttributeSet attr = new SimpleAttributeSet();
+                        boolean isItalic = StyleConstants.isItalic(text.getCharacterAttributes());
+                        StyleConstants.setItalic(attr, !isItalic);
+                        if (start != end) {
+                            doc.setCharacterAttributes(start, end - start, attr, false);
+                        } else {
+                            text.getInputAttributes().addAttributes(attr);
+                        }
+                        e.consume();
+                    } else if (e.getKeyCode() == KeyEvent.VK_U) {
+                        // Toggle underline
+                        MutableAttributeSet attr = new SimpleAttributeSet();
+                        boolean isUnderline = StyleConstants.isUnderline(text.getCharacterAttributes());
+                        StyleConstants.setUnderline(attr, !isUnderline);
+                        if (start != end) {
+                            doc.setCharacterAttributes(start, end - start, attr, false);
+                        } else {
+                            text.getInputAttributes().addAttributes(attr);
+                        }
+                        e.consume();
                     }
-                    paste.setEnabled(getClipboard() != null); //paste is only enabled if there's something in the clipboard
-                    copyPasteMenu.show(evt.getComponent(), evt.getX(), evt.getY()); //show the menu at current mouse location
                 }
             }
         });
@@ -583,8 +640,7 @@ public class Note extends JDialog {
             public void keyPressed(KeyEvent e) {
                 if (e.isControlDown() || e.isMetaDown()) {
                     if (e.getKeyCode() == KeyEvent.VK_A) {
-                        text.setSelectionStart(0);
-                        text.setSelectionEnd(text.getText().length());
+                        text.selectAll();
                     }
                 }
             }
@@ -618,54 +674,6 @@ public class Note extends JDialog {
                 }
             }
         });
-
-        //initialize copy-paste menu
-        copyPasteMenu = new JPopupMenu();
-        Dimension menuItemSize = new Dimension((int) (MENU_ITEM_WIDTH * Main.SCALE), (int) (MENU_ITEM_HEIGHT * Main.SCALE));
-        cut = new JMenuItem(getLocString("CUT"));
-        cut.setPreferredSize(menuItemSize);
-        cut.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                text.cut();
-            }
-        });
-        copy = new JMenuItem(getLocString("COPY"));
-        copy.setPreferredSize(menuItemSize);
-        copy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                text.copy();
-            }
-        });
-        paste = new JMenuItem(getLocString("PASTE"));
-        paste.setPreferredSize(menuItemSize);
-        paste.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                text.paste();
-            }
-        });
-        delete = new JMenuItem(getLocString("DELETE"));
-        delete.setPreferredSize(menuItemSize);
-        delete.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String s = getClipboard();
-                text.cut();
-                setClipboard(s);
-            }
-        });
-        selectAll = new JMenuItem(getLocString("SELECTALL"));
-        selectAll.setPreferredSize(menuItemSize);
-        selectAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                text.setSelectionStart(0);
-                text.setSelectionEnd(text.getText().length());
-            }
-        });
-        copyPasteMenu.add(cut);
-        copyPasteMenu.add(copy);
-        copyPasteMenu.add(paste);
-        copyPasteMenu.add(delete);
-        copyPasteMenu.add(new JPopupMenu.Separator());
-        copyPasteMenu.add(selectAll);
 
         //initialize color selection menu (right click on top bar)
         colorMenu = new JPopupMenu();
@@ -716,7 +724,7 @@ public class Note extends JDialog {
         });
         colorMenu.add(new JPopupMenu.Separator());
         JMenuItem m = new JMenuItem(getLocString("ABOUT"));
-        m.setPreferredSize(menuItemSize);
+        m.setPreferredSize(new Dimension((int) (MENU_ITEM_WIDTH * Main.SCALE), (int) (MENU_ITEM_HEIGHT * Main.SCALE)));
         m.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -727,8 +735,8 @@ public class Note extends JDialog {
 
         //add everything to the layout - Windows 11 Modern Style
         int buttonSize = (int)(BUTTON_HEIGHT * Main.SCALE);
-        int padding = (int)(4 * Main.SCALE);
-        int headerPadding = (int)(8 * Main.SCALE);
+        int padding = (int)(3 * Main.SCALE);
+        int headerPadding = (int)(6 * Main.SCALE);
         
         GroupLayout wrapper2Layout = new GroupLayout(wrapper2);
         wrapper2.setLayout(wrapper2Layout);
@@ -931,6 +939,7 @@ public class Note extends JDialog {
         text.setSelectedTextColor(c[7]);
         // Update scrollbar color based on theme
         jScrollPane1.getViewport().setBackground(c[4]);
+        formatMenu.updateTheme(c[4]);
     }
     
     private int resizeBorder = (int)(40 * Main.SCALE);
