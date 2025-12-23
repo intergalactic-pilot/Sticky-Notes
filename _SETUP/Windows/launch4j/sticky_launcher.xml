@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>../setupFiles/StickyNotes.jar</jar>
+  <jar>StickyNotes.jar</jar>
   <outfile>../setupFiles/StickyNotes.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
