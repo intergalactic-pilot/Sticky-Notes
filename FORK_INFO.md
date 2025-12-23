@@ -4,7 +4,7 @@
 
 This is an **enhanced community fork** of the original NoteBot project created by Federico Dossena.
 
-**Current Version:** v2.0 | **Release Date:** December 23, 2025
+**Current Version:** v2.6 | **Release Date:** December 23, 2025
 
 ### Why This Fork Exists
 
@@ -45,7 +45,7 @@ The original NoteBot source code and releases are available at the official webs
 
 ### This Fork
 
-**Current Version:** v2.0  
+**Current Version:** v2.6  
 **Enhancement Focus:** Modern UI/UX improvements  
 **Release Date:** December 23, 2025  
 **License:** GNU GPL-3.0 (same as original)  

@@ -57,4 +57,4 @@ If you have privacy concerns:
 ---
 
 **Last Updated:** December 23, 2025  
-**Version:** v2.0
+**Version:** v2.6

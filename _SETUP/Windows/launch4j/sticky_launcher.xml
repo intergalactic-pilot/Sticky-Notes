@@ -25,12 +25,12 @@
     <opt>-Dsun.java2d.dpiaware=true</opt>
   </jre>
   <versionInfo>
-    <fileVersion>2.0.0.1</fileVersion>
-    <txtFileVersion>2.0 Modern UI Edition</txtFileVersion>
+    <fileVersion>2.6.0.0</fileVersion>
+    <txtFileVersion>2.6 Modern UI Edition</txtFileVersion>
     <fileDescription>NoteBot Modern UI Edition - Windows 11 Style Sticky Notes</fileDescription>
     <copyright>Federico Dossena (Original) / Modern UI Edition Contributors</copyright>
-    <productVersion>2.0.0.1</productVersion>
-    <txtProductVersion>2.0 Modern UI Edition</txtProductVersion>
+    <productVersion>2.6.0.0</productVersion>
+    <txtProductVersion>2.6 Modern UI Edition</txtProductVersion>
     <productName>NoteBot Modern UI Edition</productName>
     <companyName>Open Source Community</companyName>
     <internalName>StickyNotes</internalName>

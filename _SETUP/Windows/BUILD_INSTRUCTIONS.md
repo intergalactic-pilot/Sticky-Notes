@@ -114,13 +114,13 @@ Write-Host "`n✓ Installer hazır: notebot-modern-setup.exe" -ForegroundColor G
 
 **launch4j\sticky_launcher.xml:**
 ```xml
-<fileVersion>2.0.0.1</fileVersion>
-<txtFileVersion>2.0 Modern UI Edition</txtFileVersion>
+<fileVersion>2.6.0.0</fileVersion>
+<txtFileVersion>2.6 Modern UI Edition</txtFileVersion>
 ```
 
 **setup.iss:**
 ```ini
-AppVersion="2.0"
+AppVersion="2.6"
 ```
 
 ### İkon Değiştirme

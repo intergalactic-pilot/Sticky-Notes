@@ -1,13 +1,13 @@
 # NoteBot - Modern UI Edition
 **Enhanced fork of the original NoteBot with Windows 11 Fluent Design UI**
 
-![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.6-blue.svg)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue.svg)
 
 NoteBot is a clone of Microsoft Sticky Notes, without useless functionalities.
 
-## ⚡ This Fork's Enhancements (v2.0)
+## ⚡ This Fork's Enhancements (v2.6)
 
 This is an **enhanced community fork** with the following improvements over the original:
 
@@ -36,10 +36,10 @@ This is an **enhanced community fork** with the following improvements over the 
 
 ## 📥 Download & Installation
 
-### Modern UI Edition v2.0 (Latest)
+### Modern UI Edition v2.6 (Latest)
 
 **Windows Installer (Recommended):**
-- [notebot-modern-v2-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.0/notebot-modern-v2-setup.exe) (~5 MB)
+- [notebot-modern-v2-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2-setup.exe) (~5 MB)
   - Includes Windows 11 Fluent Design UI
   - Auto-startup support
   - Java 8+ compatible

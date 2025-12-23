@@ -1,7 +1,7 @@
 [Setup]
 AppId={{3E658137-CE80-49E3-8084-FD0B0158CA31}
 AppName="Sticky Notes Modern UI Edition"
-AppVersion="2.0"
+AppVersion="2.6"
 AppPublisher="Modern UI Edition Contributors"
 AppPublisherURL="https://github.com/intergalactic-pilot/Scitky-Notes"
 AppSupportURL="https://github.com/intergalactic-pilot/Scitky-Notes"
