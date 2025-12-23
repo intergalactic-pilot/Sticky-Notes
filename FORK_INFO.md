@@ -4,6 +4,8 @@
 
 This is an **enhanced community fork** of the original NoteBot project created by Federico Dossena.
 
+**Current Version:** v2.0 | **Release Date:** December 23, 2025
+
 ### Why This Fork Exists
 
 The original NoteBot is an excellent lightweight alternative to Microsoft Sticky Notes. However, its UI design dates back to 2016-2019 and doesn't reflect modern design standards. This fork aims to:
@@ -43,11 +45,13 @@ The original NoteBot source code and releases are available at the official webs
 
 ### This Fork
 
+**Current Version:** v2.0  
 **Enhancement Focus:** Modern UI/UX improvements  
-**Year:** 2025  
+**Release Date:** December 23, 2025  
 **License:** GNU GPL-3.0 (same as original)  
 **Base Version:** NoteBot original codebase  
-**Major Changes:** See [CHANGELOG.md](CHANGELOG.md)
+**Major Changes:** See [CHANGELOG.md](CHANGELOG.md)  
+**Download:** [GitHub Releases](https://github.com/intergalactic-pilot/Scitky-Notes/releases)
 
 ### Contributing
 

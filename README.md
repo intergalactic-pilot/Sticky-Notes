@@ -1,9 +1,13 @@
 # NoteBot - Modern UI Edition
 **Enhanced fork of the original NoteBot with Windows 11 Fluent Design UI**
 
+![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue.svg)
+
 NoteBot is a clone of Microsoft Sticky Notes, without useless functionalities.
 
-## ⚡ This Fork's Enhancements
+## ⚡ This Fork's Enhancements (v2.0)
 
 This is an **enhanced community fork** with the following improvements over the original:
 
@@ -30,7 +34,18 @@ This is an **enhanced community fork** with the following improvements over the 
 
 ---
 
-## Download
+## 📥 Download & Installation
+
+### Modern UI Edition v2.0 (Latest)
+
+**Windows Installer (Recommended):**
+- [notebot-modern-v2-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.0/notebot-modern-v2-setup.exe) (~5 MB)
+  - Includes Windows 11 Fluent Design UI
+  - Auto-startup support
+  - Java 8+ compatible
+  - One-click installation
+
+### Original NoteBot Downloads
 [Installer for Windows](http://downloads.fdossena.com/geth.php?r=stickynotes-win)
 
 [Deb Package for Ubuntu, Debian, ...](http://downloads.fdossena.com/geth.php?r=stickynotes-deb)
@@ -38,7 +53,7 @@ This is an **enhanced community fork** with the following improvements over the 
 [Binaries for other platforms](http://downloads.fdossena.com/geth.php?r=stickynotes-bin) (Requires Java)
 
 ## Website
-[NoteBot](http://notebot.fdossena.com/)
+[Original NoteBot](http://notebot.fdossena.com/) | [This Fork on GitHub](https://github.com/intergalactic-pilot/Scitky-Notes)
 
 ## Features
 * Stick notes on your desktop
