@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ResourceBundle;
 
 /**
  * Compact modern formatting context menu for sticky notes
@@ -13,6 +14,7 @@ public class FormatMenu extends JPopupMenu {
     
     private final JTextPane textPane;
     private Color noteColor;
+    private static final ResourceBundle locBundle = ResourceBundle.getBundle("com/dosse/stickynotes/locale/locale");
     
     // Compact sizing
     private static final int ICON_BTN_SIZE = 28;
@@ -59,22 +61,22 @@ public class FormatMenu extends JPopupMenu {
     
     private void buildMenu() {
         // Quick actions
-        add(createCompactMenuItem("Cut (Ctrl+X)", this::cut));
-        add(createCompactMenuItem("Copy (Ctrl+C)", this::copy));
-        add(createCompactMenuItem("Paste (Ctrl+V)", this::paste));
+        add(createCompactMenuItem(locBundle.getString("MENU_CUT"), this::cut));
+        add(createCompactMenuItem(locBundle.getString("MENU_COPY"), this::copy));
+        add(createCompactMenuItem(locBundle.getString("MENU_PASTE"), this::paste));
         
         addCompactSeparator();
         
         // Format options
-        add(createCompactMenuItem("Bold (Ctrl+B)", this::toggleBold));
-        add(createCompactMenuItem("Italic (Ctrl+I)", this::toggleItalic));
-        add(createCompactMenuItem("Underline (Ctrl+U)", this::toggleUnderline));
-        add(createCompactMenuItem("Strikethrough", this::toggleStrikethrough));
+        add(createCompactMenuItem(locBundle.getString("MENU_BOLD"), this::toggleBold));
+        add(createCompactMenuItem(locBundle.getString("MENU_ITALIC"), this::toggleItalic));
+        add(createCompactMenuItem(locBundle.getString("MENU_UNDERLINE"), this::toggleUnderline));
+        add(createCompactMenuItem(locBundle.getString("MENU_STRIKE"), this::toggleStrikethrough));
         
         addCompactSeparator();
         
         // Text size submenu
-        JMenu sizeMenu = createCompactMenu("Size");
+        JMenu sizeMenu = createCompactMenu(locBundle.getString("MENU_SIZE"));
         int[] sizes = {8, 10, 12, 14, 16, 18, 20, 24, 28, 32};
         for (int size : sizes) {
             sizeMenu.add(createSizeItem(size));
@@ -84,12 +86,12 @@ public class FormatMenu extends JPopupMenu {
         addCompactSeparator();
         
         // List options
-        add(createCompactMenuItem("Bullet List", this::addBullet));
-        add(createCompactMenuItem("Numbered List", this::addNumbered));
+        add(createCompactMenuItem(locBundle.getString("MENU_BULLET"), this::addBullet));
+        add(createCompactMenuItem(locBundle.getString("MENU_NUMBERED"), this::addNumbered));
         
         addCompactSeparator();
         
-        add(createCompactMenuItem("Select All", this::selectAll));
+        add(createCompactMenuItem(locBundle.getString("MENU_SELECT_ALL"), this::selectAll));
     }
     
     private JButton createIconButton(String icon, String tooltip, Runnable action) {

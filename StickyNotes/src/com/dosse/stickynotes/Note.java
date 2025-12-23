@@ -253,7 +253,7 @@ public class Note extends JDialog {
     private static final int HEADER_HEIGHT = 22; // slightly taller than buttons
     private static final int MENU_ITEM_WIDTH = 140;
     private static final int MENU_ITEM_HEIGHT = 28;
-    private static final int CORNER_RADIUS = 12;
+    private static final int CORNER_RADIUS = 22;
     private static final float SCALE_FACTOR = 0.85f;
     private static final float TEXT_SCALE_STEP = 0.1f;
 
@@ -283,7 +283,7 @@ public class Note extends JDialog {
             @Override
             public void windowClosing(WindowEvent e) {
                 //if alt+f4 is pressed, save the current state and terminate the app
-                Main.saveState();
+                Main.flushSaves();
                 System.exit(0);
             }
         });
@@ -291,7 +291,7 @@ public class Note extends JDialog {
             @Override
             public void windowLostFocus(WindowEvent e) {
                 //if focus is lost, save the current state
-                Main.saveState();
+                Main.requestSave();
             }
 
             @Override
@@ -683,7 +683,7 @@ public class Note extends JDialog {
             public void onColorSchemeSelected(Color[] scheme) {
                 setColorScheme(scheme);
                 colorMenu.setVisible(false);
-                Main.saveState();
+                Main.requestSave();
             }
         });
         //custom color selector
@@ -719,7 +719,7 @@ public class Note extends JDialog {
                     setColorScheme(customScheme);
                 }
                 colorMenu.setVisible(false);
-                Main.saveState();
+                Main.requestSave();
             }
         });
         colorMenu.add(new JPopupMenu.Separator());

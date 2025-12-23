@@ -48,6 +48,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
@@ -62,7 +68,7 @@ import javax.swing.plaf.metal.MetalTheme;
  */
 public class Main {
 
-    private static final String STORAGE_PATH, BACKUP_PATH, BACKUP2_PATH, LOCK_PATH; //these variables will contain the paths to the files used by the application, initialized below
+    private static final String STORAGE_PATH, BACKUP_PATH, BACKUP2_PATH, LOCK_PATH, CONFIG_PATH; //these variables will contain the paths to the files used by the application, initialized below
 
     static {
         String os = System.getProperty("os.name").toLowerCase();
@@ -97,10 +103,66 @@ public class Main {
         BACKUP_PATH = home + "sticky.dat.bak"; //backup in case main storage is corrupt
         BACKUP2_PATH = home + "sticky.dat.bak.2"; //temp path for previous backup while current one is being backed up
         LOCK_PATH = home + "lock"; //lock file to prevent multiple instances of StickyNotes to run on the same storage
+        CONFIG_PATH = home + "config.properties"; //stores user preferences like language
     }
 
     private static final ArrayList<Note> notes = new ArrayList<Note>(); //currently open notes
     private static boolean noAutoCreate = false; //if set to true, an empty note will not be created if the app is started on an empty storage. enabled by the -autostartup parameter
+    private static final ScheduledExecutorService SAVE_SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledFuture<?> pendingSave = null;
+    private static final long SAVE_DEBOUNCE_MS = 1200;
+
+    private static void applyLanguageFromConfig() {
+        try {
+            File cfg = new File(CONFIG_PATH);
+            if (!cfg.exists()) {
+                return;
+            }
+            Properties p = new Properties();
+            try (FileInputStream fis = new FileInputStream(cfg)) {
+                p.load(fis);
+            }
+            String lang = p.getProperty("lang", "").trim().toLowerCase(Locale.ROOT);
+            Locale target;
+            switch (lang) {
+                case "tr":
+                case "tr_tr":
+                    target = new Locale("tr", "TR");
+                    break;
+                case "it":
+                case "it_it":
+                    target = new Locale("it", "IT");
+                    break;
+                case "de":
+                case "de_de":
+                    target = new Locale("de", "DE");
+                    break;
+                default:
+                    target = Locale.getDefault();
+            }
+            Locale.setDefault(target);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    public static void requestSave() {
+        synchronized (notes) {
+            if (pendingSave != null) {
+                pendingSave.cancel(false);
+            }
+            pendingSave = SAVE_SCHEDULER.schedule(Main::saveState, SAVE_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public static void flushSaves() {
+        synchronized (notes) {
+            if (pendingSave != null) {
+                pendingSave.cancel(false);
+                pendingSave = null;
+            }
+            saveState();
+        }
+    }
 
     /**
      * saves currently open notes to the main storage, and turns the previous
@@ -248,7 +310,7 @@ public class Main {
             Note n = new Note();
             n.setVisible(true);
             notes.add(n);
-            saveState();
+            requestSave();
             return n;
         }
     }
@@ -263,7 +325,7 @@ public class Main {
             notes.remove(n);
             n.setVisible(false);
             n.dispose();
-            saveState();
+            requestSave();
             if (notes.isEmpty()) {
                 System.exit(0);
             }
@@ -360,6 +422,7 @@ public class Main {
             DEFAULT_BACKGROUND = new ColorUIResource(255, 255, 255);
 
     public static void main(String args[]) {
+        applyLanguageFromConfig();
         if (alreadyRunning()) { //if the app is already running, it terminates the current instance
             System.exit(1);
         }
@@ -451,7 +514,7 @@ public class Main {
             public void run() {
                 synchronized (notes) {
                     if (!notes.isEmpty()) {
-                        saveState();
+                        flushSaves();
                     }
                 }
             }
@@ -463,7 +526,7 @@ public class Main {
             }
         }
         //save current state
-        saveState();
+        flushSaves();
         if (notes.isEmpty()) { //if there are no saved notes and none were created automatically (-autostartup flag), close the app
             System.exit(0);
         }
@@ -479,7 +542,7 @@ public class Main {
                             if (notes.isEmpty()) {
                                 return;
                             }
-                            saveState();
+                            flushSaves();
                         }
                     } catch (Throwable t) {
                     }

@@ -27,6 +27,8 @@ UninstallDisplayIcon="icon.ico"
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
+Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
 Source: "setupFiles\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs sortfilesbyextension;
@@ -40,3 +42,32 @@ Filename:"{app}\StickyNotes.exe"; Flags:runasoriginaluser nowait;
 [Registry]
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueName: "NoteBot Modern UI"; ValueType: string; ValueData: """{app}\StickyNotes.exe"" -autostartup"; Flags: uninsdeletevalue 
 Root: HKLM32; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueName: "NoteBot Modern UI"; ValueType: string; ValueData: """{app}\StickyNotes.exe"" -autostartup"; Flags: uninsdeletevalue 
+
+[Code]
+function LangToCode(const Lang: String): String;
+begin
+  if Lang = 'turkish' then Result := 'tr'
+  else if Lang = 'italian' then Result := 'it'
+  else if Lang = 'german' then Result := 'de'
+  else Result := 'en';
+end;
+
+procedure WriteLanguageConfig;
+var
+  cfgPath: String;
+  langCode: String;
+begin
+  cfgPath := ExpandConstant('{localappdata}\NoteBot\config.properties');
+  langCode := LangToCode(ActiveLanguage());
+  if not DirExists(ExtractFilePath(cfgPath)) then
+    ForceDirectories(ExtractFilePath(cfgPath));
+  SaveStringToFile(cfgPath, 'lang=' + langCode + #13#10, False);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then
+  begin
+    WriteLanguageConfig;
+  end;
+end;
