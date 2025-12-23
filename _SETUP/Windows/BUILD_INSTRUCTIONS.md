@@ -60,7 +60,7 @@ cd "d:\everything\computer staff\NoteBot-Source\_SETUP\Windows"
 2. **File → Open** tıklayın
 3. Bu dosyayı seçin: `d:\everything\computer staff\NoteBot-Source\_SETUP\Windows\setup.iss`
 4. **Build → Compile** tıklayın (veya F9)
-5. Installer oluşturulacak: `notebot-modern-setup.exe`
+5. Installer oluşturulacak: `notebot-modern-v2.6-setup.exe`
 
 #### B. Komut Satırı İle (Hızlı Yol)
 
@@ -73,7 +73,7 @@ cd "d:\everything\computer staff\NoteBot-Source\_SETUP\Windows"
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "setup.iss"
 ```
 
-**Sonuç:** `notebot-modern-setup.exe` oluşturulacak (aynı klasörde)
+**Sonuç:** `notebot-modern-v2.6-setup.exe` oluşturulacak (aynı klasörde)
 
 ## 🎯 Hızlı Komut (Her İkisi Birden)
 
@@ -88,7 +88,7 @@ cd "d:\everything\computer staff\NoteBot-Source\_SETUP\Windows"
 # 2. EXE → Installer (Inno Setup)
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "setup.iss"
 
-Write-Host "`n✓ Installer hazır: notebot-modern-setup.exe" -ForegroundColor Green
+Write-Host "`n✓ Installer hazır: notebot-modern-v2.6-setup.exe" -ForegroundColor Green
 ```
 
 ## 📦 Çıktı Dosyaları
@@ -98,7 +98,7 @@ Write-Host "`n✓ Installer hazır: notebot-modern-setup.exe" -ForegroundColor G
 - `StickyNotes.exe` - Launch4j ile oluşturulmuş EXE
 
 ### Installer:
-- `notebot-modern-setup.exe` - Windows installer (~2-3 MB)
+- `notebot-modern-v2.6-setup.exe` - Windows installer (~5 MB)
 
 ## ⚙️ Installer Özellikleri
 

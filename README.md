@@ -39,7 +39,7 @@ This is an **enhanced community fork** with the following improvements over the 
 ### Modern UI Edition v2.6 (Latest)
 
 **Windows Installer (Recommended):**
-- [notebot-modern-v2-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2-setup.exe) (~5 MB)
+- [notebot-modern-v2.6-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2.6-setup.exe) (~5 MB)
   - Includes Windows 11 Fluent Design UI
   - Auto-startup support
   - Java 8+ compatible

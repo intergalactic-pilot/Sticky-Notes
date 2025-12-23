@@ -40,7 +40,7 @@ lib/
 # Installer files (except for releases)
 _SETUP/Windows/setupFiles/
 _SETUP/Windows/*.exe
-!_SETUP/Windows/notebot-modern-v2-setup.exe
+!_SETUP/Windows/notebot-modern-v2.6-setup.exe
 
 # Temporary files
 *.tmp

@@ -8,7 +8,7 @@ All releases of the NoteBot Modern UI Edition are documented here.
 
 ### ?? Downloads
 
-- **[notebot-modern-v2-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2-setup.exe)** (~5 MB)
+- **[notebot-modern-v2.6-setup.exe](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2.6-setup.exe)** (~5 MB)
   - Windows installer with auto-startup support
   - Recommended for end-users
   - Requires Java 8 or higher
@@ -98,7 +98,7 @@ This version is **not backward compatible** in terms of UI, but note data and se
 
 | Version | Date | Type | Link |
 |---------|------|------|------|
-| v2.6 | Dec 23, 2025 | Full Release | [Download](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2-setup.exe) |
+| v2.6 | Dec 23, 2025 | Full Release | [Download](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.6/notebot-modern-v2.6-setup.exe) |
 | v2.0 | Dec 23, 2025 | Full Release | [Download](https://github.com/intergalactic-pilot/Scitky-Notes/releases/download/v2.0/notebot-modern-v2-setup.exe) |
 | v1.6.3 | Original | - | [Original Project](http://notebot.fdossena.com/) |
 
