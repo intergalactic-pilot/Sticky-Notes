@@ -89,9 +89,7 @@ _SETUP contains all the files used to build the Windows installer and the .deb p
 To build the Windows installer, you'll need [Inno Setup](http://www.jrsoftware.org/isinfo.php) and [launch4j](http://launch4j.sourceforge.net/).
 
 ## Screenshots
-![Screenshot](http://fdossena.com/stickynotes/screen1_16.png)
-
-> **Note:** Screenshots show the original version. This fork features a modernized Windows 11-style interface with rounded corners, improved colors, and enhanced usability.
+![Modern UI Screenshot](docs/images/modern-ui-preview.png)
 
 ## Differences from Original
 
