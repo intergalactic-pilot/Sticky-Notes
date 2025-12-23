@@ -33,6 +33,8 @@ This is an **enhanced community fork** with the following improvements over the 
 * **Optimized rendering** - Better performance with modern graphics APIs
 
 ---
+## Screenshots
+![Modern UI Screenshot](docs/images/modern-ui-preview.png)
 
 ## 📥 Download & Installation
 
@@ -88,8 +90,6 @@ Import the projects into Netbeans.
 _SETUP contains all the files used to build the Windows installer and the .deb package.
 To build the Windows installer, you'll need [Inno Setup](http://www.jrsoftware.org/isinfo.php) and [launch4j](http://launch4j.sourceforge.net/).
 
-## Screenshots
-![Modern UI Screenshot](docs/images/modern-ui-preview.png)
 
 ## Differences from Original
 
