@@ -1,5 +1,34 @@
-# NoteBot
+# NoteBot - Modern UI Edition
+**Enhanced fork of the original NoteBot with Windows 11 Fluent Design UI**
+
 NoteBot is a clone of Microsoft Sticky Notes, without useless functionalities.
+
+## ⚡ This Fork's Enhancements
+
+This is an **enhanced community fork** with the following improvements over the original:
+
+### 🎨 Windows 11 Modern UI
+* **Fluent Design System** - Rounded corners (8px radius) throughout the interface
+* **Modern color schemes** - 8 vibrant colors + new dark charcoal theme
+* **Hover effects** - Smooth button interactions with accent colors
+* **Improved resize experience** - Custom resize handler with 40px edge detection
+* **Better visual feedback** - Modern cursors and visual indicators
+* **Anti-aliased rendering** - Smooth graphics with proper rendering hints
+
+### 🖱️ Enhanced Usability
+* **Easier window resizing** - Larger grab zones for comfortable edge/corner dragging
+* **Modern button design** - Close button with red hover, add button with accent blue
+* **Improved color picker** - Rounded swatches with modern selection indicators
+* **Custom gradient picker** - Enhanced saturation for more vibrant custom colors
+* **Touch-friendly** - Larger interactive areas for better touch support
+
+### 🔧 Technical Improvements
+* **DPI-aware scaling** - Consistent sizing across different display scales
+* **Custom resize implementation** - More reliable than third-party components
+* **Modern Java compatibility** - Tested with OpenJDK 25
+* **Optimized rendering** - Better performance with modern graphics APIs
+
+---
 
 ## Download
 [Installer for Windows](http://downloads.fdossena.com/geth.php?r=stickynotes-win)
@@ -17,6 +46,11 @@ NoteBot is a clone of Microsoft Sticky Notes, without useless functionalities.
 * Custom colors
 * Auto startup
 * Support for high DPI screens and touch devices
+* **[NEW]** Windows 11 Fluent Design UI with rounded corners
+* **[NEW]** 9 modern color schemes including dark theme
+* **[NEW]** Enhanced resize experience with visual feedback
+* **[NEW]** Modern hover effects and button animations
+* **[NEW]** Improved color picker with gradient enhancement
 
 ## Lack of features
 Sticky Notes became trash with the August 2016 update of Windows 10, which turned it into a "modern" app, and added useless and suspicious features like synchronization and telemetry. Therefore...
@@ -42,8 +76,24 @@ To build the Windows installer, you'll need [Inno Setup](http://www.jrsoftware.o
 ## Screenshots
 ![Screenshot](http://fdossena.com/stickynotes/screen1_16.png)
 
+> **Note:** Screenshots show the original version. This fork features a modernized Windows 11-style interface with rounded corners, improved colors, and enhanced usability.
+
+## Differences from Original
+
+This fork maintains the lightweight philosophy of the original NoteBot while adding modern UI polish:
+
+* ✅ **Preserves:** Lightweight design, no telemetry, no synchronization, open source
+* ✨ **Adds:** Windows 11 Fluent Design, better resize experience, modern color schemes
+* 🎨 **Updates:** All UI components modernized with rounded corners and hover effects
+* 🔧 **Improves:** Custom resize handler replacing third-party component
+
+### Original Project
+The original NoteBot was created by Federico Dossena.  
+Visit the [original project](http://notebot.fdossena.com/) for more information.
+
 ## License
-Copyright (C) 2016-2019 Federico Dossena
+Copyright (C) 2016-2019 Federico Dossena (Original NoteBot)  
+Copyright (C) 2025 Modern UI Edition Contributors (UI Enhancements)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

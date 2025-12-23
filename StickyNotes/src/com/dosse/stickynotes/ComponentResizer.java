@@ -54,7 +54,7 @@ public class ComponentResizer extends MouseAdapter
 	 */
 	public ComponentResizer()
 	{
-		this(new Insets(5, 5, 5, 5), new Dimension(1, 1));
+		this(new Insets(8, 8, 8, 8), new Dimension(1, 1));
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class ComponentResizer extends MouseAdapter
 	 */
 	public ComponentResizer(Component... components)
 	{
-		this(new Insets(5, 5, 5, 5), new Dimension(1, 1), components);
+		this(new Insets(8, 8, 8, 8), new Dimension(1, 1), components);
 	}
 
 	/**
@@ -94,7 +94,12 @@ public class ComponentResizer extends MouseAdapter
 	 */
 	public ComponentResizer(Insets dragInsets, Dimension snapSize, Component... components)
 	{
-		setDragInsets( dragInsets );
+		// Set dragInsets directly to avoid validation with default minimumSize
+		this.dragInsets = dragInsets;
+		// Update minimumSize to match dragInsets requirements
+		int minWidth = dragInsets.left + dragInsets.right + 10;
+		int minHeight = dragInsets.top + dragInsets.bottom + 10;
+		this.minimumSize = new Dimension(minWidth, minHeight);
 		setSnapSize( snapSize );
 		registerComponent( components );
 	}

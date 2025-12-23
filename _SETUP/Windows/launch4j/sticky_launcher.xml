@@ -15,24 +15,24 @@
   <manifest></manifest>
   <icon>..\icon.ico</icon>
   <jre>
-    <path>jre</path>
+    <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion></minVersion>
+    <minVersion>1.8.0</minVersion>
     <maxVersion></maxVersion>
-    <jdkPreference>jdkOnly</jdkPreference>
+    <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
     <opt>-Dsun.java2d.dpiaware=true</opt>
   </jre>
   <versionInfo>
-    <fileVersion>1.6.0.12</fileVersion>
-    <txtFileVersion>1.6</txtFileVersion>
-    <fileDescription>NoteBot - A clone of Microsoft Sticky Notes</fileDescription>
-    <copyright>Federico Dossena</copyright>
-    <productVersion>1.6.0.12</productVersion>
-    <txtProductVersion>1.6</txtProductVersion>
-    <productName>NoteBot</productName>
-    <companyName>Federico Dossena</companyName>
+    <fileVersion>2.0.0.1</fileVersion>
+    <txtFileVersion>2.0 Modern UI Edition</txtFileVersion>
+    <fileDescription>NoteBot Modern UI Edition - Windows 11 Style Sticky Notes</fileDescription>
+    <copyright>Federico Dossena (Original) / Modern UI Edition Contributors</copyright>
+    <productVersion>2.0.0.1</productVersion>
+    <txtProductVersion>2.0 Modern UI Edition</txtProductVersion>
+    <productName>NoteBot Modern UI Edition</productName>
+    <companyName>Open Source Community</companyName>
     <internalName>StickyNotes</internalName>
     <originalFilename>StickyNotes.exe</originalFilename>
     <trademarks></trademarks>

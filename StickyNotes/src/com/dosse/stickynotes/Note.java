@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2016 Federico Dossena
+ * Copyright (C) 2016-2019 Federico Dossena (Original NoteBot)
+ * Copyright (C) 2025 Modern UI Edition Contributors (UI Enhancements)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,15 +14,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * ============================================================================
+ * MODERN UI ENHANCEMENTS:
+ * - Windows 11 Fluent Design with rounded corners (8px)
+ * - Modern color schemes with accent colors
+ * - Custom resize handler with 40px edge detection
+ * - Hover effects and modern button designs
+ * - Enhanced visual feedback and usability
+ * ============================================================================
  */
 package com.dosse.stickynotes;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -76,91 +90,104 @@ public class Note extends JDialog {
         return locBundle.getString(s);
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Color schemes">
+    //<editor-fold defaultstate="collapsed" desc="Color schemes - Windows 11 Style">
     /**
      * SCHEME FORMAT: {external color, line border color, bar color, buttons
      * color, internal color, text color, selection background color, selected
      * text color}
+     * 
+     * Windows 11 Sticky Notes color palette - more vibrant and modern
      */
     private static final Color[] YELLOW_SCHEME = new Color[]{
-        new Color(248, 248, 182),
-        new Color(232, 232, 170),
-        new Color(248, 248, 182),
-        new Color(105, 105, 77),
-        new Color(253, 253, 202),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(255, 247, 177),  // external - bright yellow
+        new Color(229, 222, 159),  // border - slightly darker
+        new Color(255, 247, 177),  // bar
+        new Color(89, 84, 51),     // buttons - dark contrast
+        new Color(255, 252, 204),  // internal - lighter yellow
+        new Color(38, 38, 38),     // text - near black
+        new Color(0, 120, 212),    // selection - Windows accent blue
+        new Color(255, 255, 255)   // selected text
     };
     private static final Color[] ORANGE_SCHEME = new Color[]{
-        new Color(248, 205, 161),
-        new Color(230, 189, 149),
-        new Color(248, 205, 161),
-        new Color(102, 84, 66),
-        new Color(255, 215, 173),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(255, 214, 156),  // Peach/Orange
+        new Color(229, 192, 140),
+        new Color(255, 214, 156),
+        new Color(89, 67, 43),
+        new Color(255, 228, 186),
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
     private static final Color[] BLUE_SCHEME = new Color[]{
-        new Color(201, 236, 248),
-        new Color(188, 221, 232),
-        new Color(201, 236, 248),
-        new Color(78, 92, 96),
-        new Color(217, 243, 251),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(167, 219, 255),  // Sky blue
+        new Color(150, 196, 229),
+        new Color(167, 219, 255),
+        new Color(51, 76, 89),
+        new Color(194, 234, 255),
+        new Color(38, 38, 38),
+        new Color(0, 90, 158),
+        new Color(255, 255, 255)
     };
     private static final Color[] GREEN_SCHEME = new Color[]{
-        new Color(197, 247, 193),
-        new Color(183, 230, 179),
-        new Color(197, 247, 193),
-        new Color(79, 96, 77),
-        new Color(209, 254, 203),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(175, 237, 173),  // Mint green
+        new Color(157, 213, 155),
+        new Color(175, 237, 173),
+        new Color(54, 82, 53),
+        new Color(200, 247, 197),
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
     private static final Color[] PINK_SCHEME = new Color[]{
-        new Color(241, 195, 241),
-        new Color(230, 186, 230),
-        new Color(241, 195, 241),
-        new Color(99, 80, 99),
-        new Color(246, 211, 246),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(255, 191, 224),  // Pink
+        new Color(229, 171, 201),
+        new Color(255, 191, 224),
+        new Color(89, 59, 78),
+        new Color(255, 214, 236),
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
     private static final Color[] PURPLE_SCHEME = new Color[]{
-        new Color(212, 205, 243),
-        new Color(200, 194, 230),
-        new Color(212, 205, 243),
-        new Color(89, 86, 102),
-        new Color(221, 217, 254),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(208, 191, 255),  // Lavender
+        new Color(186, 171, 229),
+        new Color(208, 191, 255),
+        new Color(72, 59, 89),
+        new Color(224, 214, 255),
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
     private static final Color[] RED_SCHEME = new Color[]{
-        new Color(247, 197, 193),
-        new Color(230, 183, 179),
-        new Color(247, 197, 193),
-        new Color(96, 79, 77),
-        new Color(254, 209, 203),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(255, 183, 176),  // Coral/Salmon
+        new Color(229, 164, 158),
+        new Color(255, 183, 176),
+        new Color(89, 57, 54),
+        new Color(255, 209, 204),
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
     private static final Color[] WHITE_SCHEME = new Color[]{
-        new Color(245, 245, 245),
-        new Color(230, 230, 230),
-        new Color(245, 245, 245),
-        new Color(100, 100, 100),
+        new Color(249, 249, 249),  // Light gray/white
+        new Color(229, 229, 229),
+        new Color(249, 249, 249),
+        new Color(96, 96, 96),
         new Color(255, 255, 255),
-        new Color(0, 0, 0),
-        new Color(136, 195, 255),
-        new Color(0, 0, 0)
+        new Color(38, 38, 38),
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
+    };
+    // New: Charcoal/Dark theme for Windows 11 dark mode users
+    private static final Color[] CHARCOAL_SCHEME = new Color[]{
+        new Color(55, 55, 55),     // Dark gray
+        new Color(70, 70, 70),
+        new Color(55, 55, 55),
+        new Color(180, 180, 180),
+        new Color(45, 45, 45),
+        new Color(240, 240, 240),  // Light text
+        new Color(0, 120, 212),
+        new Color(255, 255, 255)
     };
 
     private static final Color[] DEFAULT_SCHEME = YELLOW_SCHEME;
@@ -208,15 +235,17 @@ public class Note extends JDialog {
         }
     }
 
-    //UI Constants
-    private static final int DEFAULT_NOTE_WIDTH = 190;
-    private static final int DEFAULT_NOTE_HEIGHT = 170;
-    private static final int MIN_NOTE_WIDTH = 160;
-    private static final int MIN_NOTE_HEIGHT = 90;
-    private static final int BORDER_SIZE = 6;
-    private static final int BUTTON_HEIGHT = 19;
-    private static final int MENU_ITEM_WIDTH = 100;
+    //UI Constants - Windows 11 Modern Style
+    private static final int DEFAULT_NOTE_WIDTH = 280;
+    private static final int DEFAULT_NOTE_HEIGHT = 280;
+    private static final int MIN_NOTE_WIDTH = 200;
+    private static final int MIN_NOTE_HEIGHT = 120;
+    private static final int BORDER_SIZE = 1;
+    private static final int BUTTON_HEIGHT = 32;
+    private static final int HEADER_HEIGHT = 40;
+    private static final int MENU_ITEM_WIDTH = 140;
     private static final int MENU_ITEM_HEIGHT = 36;
+    private static final int CORNER_RADIUS = 8;
     private static final float SCALE_FACTOR = 0.85f;
     private static final float TEXT_SCALE_STEP = 0.1f;
 
@@ -269,18 +298,115 @@ public class Note extends JDialog {
         setUndecorated(true); //removes system window border
 
         //now we will create and initialize all the elements inside the note
-        wrapper1 = new JPanel();
-        wrapper2 = new JPanel();
-        newNote = new JButton();
-        deleteNote = new JButton();
+        // Windows 11 style - rounded corners panel
+        wrapper1 = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), (int)(CORNER_RADIUS * Main.SCALE), (int)(CORNER_RADIUS * Main.SCALE));
+                g2.dispose();
+            }
+        };
+        wrapper1.setOpaque(false);
+        
+        wrapper2 = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                // Only round top corners for header area
+                g2.fillRoundRect(0, 0, getWidth(), (int)(HEADER_HEIGHT * Main.SCALE), (int)(CORNER_RADIUS * Main.SCALE), (int)(CORNER_RADIUS * Main.SCALE));
+                g2.fillRect(0, (int)(CORNER_RADIUS * Main.SCALE), getWidth(), getHeight() - (int)(CORNER_RADIUS * Main.SCALE));
+                g2.dispose();
+            }
+        };
+        wrapper2.setOpaque(false);
+        wrapper2.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+        
+        // Modern buttons with hover effects
+        newNote = new JButton("+") {
+            private boolean isHovered = false;
+            private boolean isPressed = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) { isHovered = true; repaint(); }
+                    @Override
+                    public void mouseExited(MouseEvent e) { isHovered = false; isPressed = false; repaint(); }
+                    @Override
+                    public void mousePressed(MouseEvent e) { isPressed = true; repaint(); }
+                    @Override
+                    public void mouseReleased(MouseEvent e) { isPressed = false; repaint(); }
+                });
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (isPressed) {
+                    g2.setColor(new Color(0, 0, 0, 40));
+                } else if (isHovered) {
+                    g2.setColor(new Color(0, 0, 0, 20));
+                }
+                if (isHovered || isPressed) {
+                    g2.fillRoundRect(2, 2, getWidth()-4, getHeight()-4, 6, 6);
+                }
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        
+        deleteNote = new JButton("×") {
+            private boolean isHovered = false;
+            private boolean isPressed = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) { isHovered = true; repaint(); }
+                    @Override
+                    public void mouseExited(MouseEvent e) { isHovered = false; isPressed = false; repaint(); }
+                    @Override
+                    public void mousePressed(MouseEvent e) { isPressed = true; repaint(); }
+                    @Override
+                    public void mouseReleased(MouseEvent e) { isPressed = false; repaint(); }
+                });
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (isPressed) {
+                    g2.setColor(new Color(232, 17, 35, 200));
+                    setForeground(Color.WHITE);
+                } else if (isHovered) {
+                    g2.setColor(new Color(232, 17, 35, 160));
+                    setForeground(Color.WHITE);
+                } else {
+                    setForeground(getForeground());
+                }
+                if (isHovered || isPressed) {
+                    g2.fillRoundRect(2, 2, getWidth()-4, getHeight()-4, 6, 6);
+                }
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        
         jScrollPane1 = new JScrollPane();
-        //create the text area
+        //create the text area with rounded bottom corners
         text = new JTextArea() {
             @Override
             public boolean getScrollableTracksViewportWidth() {//configures the textarea to resize properly horizontaly (workaround for swing bug)
                 return true;
             }
         };
+        
+        // Set modern text area margins
+        text.setMargin(new java.awt.Insets((int)(8 * Main.SCALE), (int)(12 * Main.SCALE), (int)(8 * Main.SCALE), (int)(12 * Main.SCALE)));
+        
         //enable line wrap
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
@@ -295,6 +421,10 @@ public class Note extends JDialog {
 
         jScrollPane1.setBorder(null);
         jScrollPane1.setViewportView(text); //add text area to scrollpane
+        jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // Modern thin scrollbar
+        jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension((int)(8 * Main.SCALE), 0));
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement((int)(16 * Main.SCALE));
 
         //events used for dragging the note
         wrapper2.addMouseListener(new MouseAdapter() {
@@ -310,21 +440,58 @@ public class Note extends JDialog {
                 setLocation(evt.getXOnScreen() - mouseDragStartX, evt.getYOnScreen() - mouseDragStartY);
             }
         });
-        //initialize ComponentResizer to make the window resizable
-        ComponentResizer cr = new ComponentResizer();
-        cr.registerComponent(this);
-        cr.setSnapSize(new Dimension(1, 1)); //no snap
-        cr.setMinimumSize(new Dimension((int) (MIN_NOTE_WIDTH * Main.SCALE), (int) (MIN_NOTE_HEIGHT * Main.SCALE)));
+        
+        // Custom resize handler - much simpler and more reliable
+        addMouseListener(new MouseAdapter() {
+            private int direction = 0;
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+                direction = getResizeDirection(e.getX(), e.getY());
+                if (direction != 0) {
+                    startResizeX = e.getXOnScreen();
+                    startResizeY = e.getYOnScreen();
+                    startResizeWidth = getWidth();
+                    startResizeHeight = getHeight();
+                }
+            }
+        });
+        
+        addMouseMotionListener(new MouseMotionAdapter() {
+            private int direction = 0;
+            
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+                direction = getResizeDirection(e.getX(), e.getY());
+                updateCursor(direction);
+            }
+            
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+                if (direction == 0) {
+                    direction = getResizeDirection(e.getX(), e.getY());
+                }
+                if (direction != 0) {
+                    resizeWindow(e.getXOnScreen(), e.getYOnScreen());
+                }
+            }
+        });
+        
         setPreferredSize(new Dimension((int) (DEFAULT_NOTE_WIDTH * Main.SCALE), (int) (DEFAULT_NOTE_HEIGHT * Main.SCALE)));
         setLocation(MouseInfo.getPointerInfo().getLocation()); //new note is placed at current mouse coordinates
-        setResizable(false); //disallow resize by OS, such as maximize. Notes are still resizeable by the user (provided by ComponentResizer)
+        setResizable(false); //disallow resize by OS, such as maximize. Notes are still resizeable by the user (provided by custom handler)
 
-        //new note button
-        newNote.setFont(new FontUIResource(Main.BUTTON_FONT));
-        newNote.setText("+");
+        //new note button - Windows 11 style
+        newNote.setFont(new FontUIResource(Main.BUTTON_FONT.deriveFont(Main.BUTTON_TEXT_SIZE * 1.4f)));
         newNote.setBorderPainted(false);
         newNote.setContentAreaFilled(false);
         newNote.setFocusPainted(false);
+        newNote.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        newNote.setToolTipText(getLocString("APPNAME") + " - New Note");
         newNote.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -332,12 +499,13 @@ public class Note extends JDialog {
             }
         });
 
-        //delete note button
-        deleteNote.setFont(new FontUIResource(Main.BUTTON_FONT));
-        deleteNote.setText("X");
+        //delete note button - Windows 11 style with red hover
+        deleteNote.setFont(new FontUIResource(Main.BUTTON_FONT.deriveFont(Main.BUTTON_TEXT_SIZE * 1.4f)));
         deleteNote.setBorderPainted(false);
         deleteNote.setContentAreaFilled(false);
         deleteNote.setFocusPainted(false);
+        deleteNote.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        deleteNote.setToolTipText("Close Note");
         deleteNote.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 Main.delete(Note.this);
@@ -501,7 +669,8 @@ public class Note extends JDialog {
 
         //initialize color selection menu (right click on top bar)
         colorMenu = new JPopupMenu();
-        colorMenu.add(new ColorSelector(new Color[][]{YELLOW_SCHEME, ORANGE_SCHEME, BLUE_SCHEME, GREEN_SCHEME, PINK_SCHEME, PURPLE_SCHEME, RED_SCHEME, WHITE_SCHEME}) {
+        // Windows 11 style color palette - includes dark theme option
+        colorMenu.add(new ColorSelector(new Color[][]{YELLOW_SCHEME, ORANGE_SCHEME, BLUE_SCHEME, GREEN_SCHEME, PINK_SCHEME, PURPLE_SCHEME, RED_SCHEME, WHITE_SCHEME, CHARCOAL_SCHEME}) {
             @Override
             public void onColorSchemeSelected(Color[] scheme) {
                 setColorScheme(scheme);
@@ -556,15 +725,45 @@ public class Note extends JDialog {
         });
         colorMenu.add(m);
 
-        //add everything to the layout
+        //add everything to the layout - Windows 11 Modern Style
+        int buttonSize = (int)(BUTTON_HEIGHT * Main.SCALE);
+        int padding = (int)(4 * Main.SCALE);
+        int headerPadding = (int)(8 * Main.SCALE);
+        
         GroupLayout wrapper2Layout = new GroupLayout(wrapper2);
         wrapper2.setLayout(wrapper2Layout);
-        wrapper2Layout.setHorizontalGroup(wrapper2Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(wrapper2Layout.createSequentialGroup().addComponent(newNote).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE).addComponent(deleteNote)).addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE));
-        wrapper2Layout.setVerticalGroup(wrapper2Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, wrapper2Layout.createSequentialGroup().addGap(0, 0, 0).addGroup(wrapper2Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(deleteNote, GroupLayout.PREFERRED_SIZE, (int) (19 * Main.SCALE * 0.85f), GroupLayout.PREFERRED_SIZE).addComponent(newNote, GroupLayout.PREFERRED_SIZE, (int) (19 * Main.SCALE * 0.85f), GroupLayout.PREFERRED_SIZE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)));
+        wrapper2Layout.setHorizontalGroup(
+            wrapper2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(wrapper2Layout.createSequentialGroup()
+                    .addGap(headerPadding)
+                    .addComponent(newNote, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                    .addComponent(deleteNote, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                    .addGap(headerPadding))
+                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
+        wrapper2Layout.setVerticalGroup(
+            wrapper2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(GroupLayout.Alignment.TRAILING, wrapper2Layout.createSequentialGroup()
+                    .addGap(padding)
+                    .addGroup(wrapper2Layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                        .addComponent(deleteNote, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(newNote, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE))
+                    .addGap(padding)
+                    .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+        );
+        
         GroupLayout wrapper1Layout = new GroupLayout(wrapper1);
         wrapper1.setLayout(wrapper1Layout);
-        wrapper1Layout.setHorizontalGroup(wrapper1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, wrapper1Layout.createSequentialGroup().addGap((int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f)).addComponent(wrapper2, GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE).addGap((int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f))));
-        wrapper1Layout.setVerticalGroup(wrapper1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(wrapper1Layout.createSequentialGroup().addGap((int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f)).addComponent(wrapper2, GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE).addGap((int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f), (int) (6 * Main.SCALE * 0.85f))));
+        wrapper1Layout.setHorizontalGroup(
+            wrapper1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(wrapper2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        wrapper1Layout.setVerticalGroup(
+            wrapper1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(wrapper2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(wrapper1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
@@ -572,6 +771,14 @@ public class Note extends JDialog {
         pack(); //finalize the layout
 
         setColorScheme(DEFAULT_SCHEME); //set default color scheme (yellow)
+        
+        // Apply rounded corners to window - Windows 11 style
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                setShape(new java.awt.geom.RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), CORNER_RADIUS * Main.SCALE, CORNER_RADIUS * Main.SCALE));
+            }
+        });
 
         //and we're done
     }
@@ -692,7 +899,7 @@ public class Note extends JDialog {
     public Color[] getColorScheme() {
         Color[] ret = new Color[8];
         ret[0] = wrapper1.getBackground();
-        ret[1] = ((LineBorder) wrapper1.getBorder()).getLineColor();
+        ret[1] = savedBorderColor != null ? savedBorderColor : wrapper1.getBackground();
         ret[2] = wrapper2.getBackground();
         ret[3] = newNote.getForeground();
         ret[4] = text.getBackground();
@@ -701,15 +908,19 @@ public class Note extends JDialog {
         ret[7] = text.getSelectedTextColor();
         return ret;
     }
+    
+    private Color savedBorderColor = null;
 
     /**
-     * set color scheme
+     * set color scheme - Windows 11 Modern Style
      *
      * @param c color scheme (see format at the beginning of this file)
      */
     public void setColorScheme(Color[] c) {
+        savedBorderColor = c[1];
         wrapper1.setBackground(c[0]);
-        wrapper1.setBorder(new LineBorder(c[1]));
+        // Modern thin border - Windows 11 style
+        wrapper1.setBorder(new LineBorder(c[1], 1));
         wrapper2.setBackground(c[2]);
         newNote.setForeground(c[3]);
         deleteNote.setForeground(c[3]);
@@ -718,6 +929,97 @@ public class Note extends JDialog {
         text.setCaretColor(c[5]);
         text.setSelectionColor(c[6]);
         text.setSelectedTextColor(c[7]);
+        // Update scrollbar color based on theme
+        jScrollPane1.getViewport().setBackground(c[4]);
     }
-
+    
+    private int resizeBorder = (int)(40 * Main.SCALE);
+    private int startResizeX, startResizeY, startResizeWidth, startResizeHeight;
+    
+    /**
+     * Determine which direction to resize based on mouse position
+     */
+    private int getResizeDirection(int x, int y) {
+        int direction = 0;
+        // Check if mouse is in resize area (40px from edges)
+        if (x < resizeBorder) direction |= 2; // WEST
+        if (x > getWidth() - resizeBorder) direction |= 8; // EAST
+        if (y < resizeBorder) direction |= 1; // NORTH
+        if (y > getHeight() - resizeBorder) direction |= 4; // SOUTH
+        return direction;
+    }
+    
+    /**
+     * Update cursor based on resize direction
+     */
+    private void updateCursor(int direction) {
+        Cursor cursor;
+        switch (direction) {
+            case 1: cursor = new Cursor(Cursor.N_RESIZE_CURSOR); break;
+            case 2: cursor = new Cursor(Cursor.W_RESIZE_CURSOR); break;
+            case 3: cursor = new Cursor(Cursor.NW_RESIZE_CURSOR); break;
+            case 4: cursor = new Cursor(Cursor.S_RESIZE_CURSOR); break;
+            case 6: cursor = new Cursor(Cursor.SW_RESIZE_CURSOR); break;
+            case 8: cursor = new Cursor(Cursor.E_RESIZE_CURSOR); break;
+            case 9: cursor = new Cursor(Cursor.NE_RESIZE_CURSOR); break;
+            case 12: cursor = new Cursor(Cursor.SE_RESIZE_CURSOR); break;
+            default: cursor = Cursor.getDefaultCursor();
+        }
+        setCursor(cursor);
+    }
+    
+    /**
+     * Resize window based on mouse drag
+     */
+    private void resizeWindow(int mouseX, int mouseY) {
+        int direction = getResizeDirection(lastMouseX, lastMouseY);
+        if (direction == 0) return;
+        
+        int deltaX = mouseX - startResizeX;
+        int deltaY = mouseY - startResizeY;
+        
+        int minWidth = (int)(MIN_NOTE_WIDTH * Main.SCALE);
+        int minHeight = (int)(MIN_NOTE_HEIGHT * Main.SCALE);
+        
+        int newX = getX();
+        int newY = getY();
+        int newWidth = startResizeWidth;
+        int newHeight = startResizeHeight;
+        
+        if ((direction & 2) != 0) { // WEST
+            newX = getX() + deltaX;
+            newWidth = startResizeWidth - deltaX;
+        }
+        if ((direction & 8) != 0) { // EAST
+            newWidth = startResizeWidth + deltaX;
+        }
+        if ((direction & 1) != 0) { // NORTH
+            newY = getY() + deltaY;
+            newHeight = startResizeHeight - deltaY;
+        }
+        if ((direction & 4) != 0) { // SOUTH
+            newHeight = startResizeHeight + deltaY;
+        }
+        
+        // Apply minimum size constraints
+        if (newWidth < minWidth) newWidth = minWidth;
+        if (newHeight < minHeight) newHeight = minHeight;
+        
+        // Keep WEST resize from shrinking too much
+        if ((direction & 2) != 0 && newWidth < minWidth) {
+            newX = getX() + (startResizeWidth - minWidth);
+            newWidth = minWidth;
+        }
+        
+        // Keep NORTH resize from shrinking too much
+        if ((direction & 1) != 0 && newHeight < minHeight) {
+            newY = getY() + (startResizeHeight - minHeight);
+            newHeight = minHeight;
+        }
+        
+        setLocation(newX, newY);
+        setSize(newWidth, newHeight);
+    }
+    
+    private int lastMouseX, lastMouseY;
 }

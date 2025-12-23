@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2016 Federico Dossena
+ * Copyright (C) 2016-2019 Federico Dossena (Original NoteBot)
+ * Copyright (C) 2025 Modern UI Edition Contributors (UI Enhancements)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,6 +14,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * ============================================================================
+ * NOTEBOT - MODERN UI EDITION
+ * ============================================================================
+ * This is an enhanced fork of the original NoteBot with Windows 11 Fluent
+ * Design UI improvements. Features include rounded corners, modern color
+ * schemes, enhanced resize functionality, and improved usability.
+ * 
+ * Original project: http://notebot.fdossena.com/
+ * ============================================================================
  */
 package com.dosse.stickynotes;
 
@@ -27,6 +38,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
