@@ -119,12 +119,19 @@ public class AboutDialog extends JDialog {
         ver.setBounds((int)(20 * Main.SCALE), (int) (150 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (24 * Main.SCALE));
         main.add(ver);
         
+        JLabel changes = new JLabel();
+        changes.setFont(infoFont);
+        changes.setForeground(textColor);
+        changes.setText("<html>" + locBundle.getString("ABOUT_CHANGES") + "</html>");
+        changes.setBounds((int)(20 * Main.SCALE), (int) (170 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (50 * Main.SCALE));
+        main.add(changes);
+        
         final JLabel url = new JLabel();
         url.setFont(infoFont);
         url.setText(locBundle.getString("ABOUT_URL"));
         url.setForeground(new Color(0, 102, 204));  // Windows 11 link blue
         url.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        url.setBounds((int)(20 * Main.SCALE), (int) (174 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (24 * Main.SCALE));
+        url.setBounds((int)(20 * Main.SCALE), (int) (220 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (24 * Main.SCALE));
         url.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -148,7 +155,7 @@ public class AboutDialog extends JDialog {
         copy.setFont(infoFont);
         copy.setForeground(textColor);
         copy.setText("<html>" + locBundle.getString("ABOUT_COPYRIGHT") + "</html>");
-        copy.setBounds((int)(20 * Main.SCALE), (int) (210 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (80 * Main.SCALE));
+        copy.setBounds((int)(20 * Main.SCALE), (int) (250 * Main.SCALE), main.getWidth() - (int)(40 * Main.SCALE), (int) (80 * Main.SCALE));
         main.add(copy);
         
         // Close button - Windows 11 style
